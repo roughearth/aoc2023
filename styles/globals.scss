@@ -1,0 +1,37 @@
+$color: #cccccc;
+$green: #00cc00;
+$bg: #0F0F23;
+
+body {
+  margin: 1rem;
+  font-family: 'Courier New', Courier, monospace;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  background-color: $bg;
+  color: $color;
+}
+
+h1 {
+  color: $green;
+  text-shadow: 0 0 2px $green, 0 0 5px $green;
+}
+
+a,
+a:visited {
+  color: $color;
+}
+
+select option {
+  background-color: $bg;
+  color: $color;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+pre {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1rem;
+}

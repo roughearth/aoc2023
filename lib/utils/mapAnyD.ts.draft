@@ -1,0 +1,68 @@
+export class MapAnyD<T> implements Map<number[], T>{
+  private store: Map<string, T>;
+  private dim: number;
+
+  constructor(dim: number) {
+    this.store = new Map<string, T>();
+    this.dim = dim;
+  }
+
+  private getKey(keys: number[]) {
+    return JSON.stringify(Object.assign(Array(this.dim), keys).slice(0, this.dim));
+  }
+
+  get size() {
+    return this.store.size;
+  }
+
+  get [Symbol.iterator]() {
+    return this.entries;
+  }
+
+  get [Symbol.toStringTag]() {
+    return 'MapAnyD';
+  }
+
+  clear() {
+    this.store.clear()
+  }
+
+  delete(keys: number[]) {
+    return this.store.delete(this.getKey(keys))
+  }
+
+  *entries() {
+    for (const [k, value] of this.store.entries()) {
+      yield [JSON.parse(k) as number[], value];
+    }
+  }
+
+  forEach(fn: Function) {
+    return this.store.forEach((value, sKey: string, ...rest) => {
+      fn(value, JSON.parse(sKey), ...rest)
+    })
+  }
+
+  get(keys: number[]) {
+    return this.store.get(this.getKey(keys))
+  }
+
+  has(keys: number[]) {
+    return this.store.has(this.getKey(keys))
+  }
+
+  *keys() {
+    for (const k of this.store.keys()) {
+      yield JSON.parse(k) as number[];
+    }
+  }
+
+  set(keys: number[], value: T) {
+    this.store.set(this.getKey(keys), value);
+    return this;
+  }
+
+  values() {
+    return this.store.values();
+  }
+}
