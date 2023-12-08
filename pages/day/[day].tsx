@@ -102,8 +102,8 @@ const App: React.FC = () => {
 
   return (
     <>
-      <h1>AoC 2022 - Day {day}</h1>
-      <p><a href={`https://adventofcode.com/2022/day/${day}`} target="_blank" rel="noreferrer">Problem</a></p>
+      <h1>AoC 2023 - Day {day}</h1>
+      <p><a href={`https://adventofcode.com/2023/day/${day}`} target="_blank" rel="noreferrer">Problem</a></p>
       <div className="parts">
         <div className="part">
           <h2>Part 1 <Check answers={answers} result={result1} index={0} /></h2>

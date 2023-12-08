@@ -6,12 +6,12 @@ export default function Home() {
   return (
     <div className={styles.container}>
       <Head>
-        <title>AoC 2022</title>
+        <title>AoC 2023</title>
       </Head>
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-          AoC 2022
+          AoC 2023
         </h1>
         <Nav />
       </main>

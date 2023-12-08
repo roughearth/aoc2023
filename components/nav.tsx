@@ -7,12 +7,13 @@ import style from './nav.module.scss';
 
 const decemberDays = [
   [
-    'nov28', 'nov29', 'nov30',
-    ...generateArray(4, i => `${i + 1}`)
+    'nov27', 'nov28', 'nov29', 'nov30',
+    ...generateArray(3, i => `${i + 1}`)
   ],
-  generateArray(7, i => `${i + 5}`),
-  generateArray(7, i => `${i + 12}`),
-  generateArray(7, i => `${i + 19}`)
+  generateArray(7, i => `${i + 4}`),
+  generateArray(7, i => `${i + 11}`),
+  generateArray(7, i => `${i + 18}`),
+  generateArray(1, i => `${i + 25}`)
 ];
 
 const Nav: React.FC = () => {
@@ -35,10 +36,10 @@ const Nav: React.FC = () => {
       <ul className={style.navList}>
         {leaderBoardMap && leaderBoardMap.map(([id, name]) => (
           <li key={id}>
-            <a href={`https://adventofcode.com/2022/leaderboard/private/view/${id}`} target="_blank" rel="noreferrer">{name} leaderboard</a>
+            <a href={`https://adventofcode.com/2023/leaderboard/private/view/${id}`} target="_blank" rel="noreferrer">{name} leaderboard</a>
           </li>
         ))}
-        <li><a href="https://adventofcode.com/2022/" target="_blank" rel="noreferrer">AoC 2022</a></li>
+        <li><a href="https://adventofcode.com/2023/" target="_blank" rel="noreferrer">AoC 2023</a></li>
       </ul>
     </>
   );

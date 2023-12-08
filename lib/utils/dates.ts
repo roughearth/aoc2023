@@ -1,7 +1,7 @@
 export function determineDay() {
   const today = new Date();
-  const dec1 = new Date("December 1 2022");
-  const dec26 = new Date("December 26 2022");
+  const dec1 = new Date("December 1 2023");
+  const dec26 = new Date("December 26 2023");
 
   if (today < dec1) {
     return -Number.MAX_SAFE_INTEGER;

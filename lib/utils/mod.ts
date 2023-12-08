@@ -10,6 +10,7 @@ export function modular(mod: number) {
 }
 
 export function modLpr(n: number, mod: number) {
+  mod = Math.abs(mod);
   return ((n % mod) + mod) % mod;
 }
 

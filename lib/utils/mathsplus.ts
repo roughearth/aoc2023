@@ -1,3 +1,4 @@
+import { productOf } from "./array";
 import { modPow } from "./mod";
 
 // return value [[factor, power], ...] eg 90 -> [[2, 1], [3, 2], [5, 1]]
@@ -87,8 +88,18 @@ export function isGenerator(gen: number, mod: number) {
   return true;
 }
 
-export function gcd(a: number, b: number, ...more: number[]): number {
-  if (more.length) {
+export function gcd(...numbers: number[]): number {
+  if (numbers.length === 0) {
+    throw new Error("gcd requires some arguments");
+  }
+
+  if (numbers.length === 1) {
+    return numbers[0];
+  }
+
+  let [a, b, ...more] = numbers;
+
+  if (numbers.length > 2) {
     // reduce pairwise
     return [a, b, ...more].reduce((a, b) => gcd(a, b));
   }
@@ -106,4 +117,8 @@ export function gcd(a: number, b: number, ...more: number[]): number {
   }
 
   return gcd(b, m);
+}
+
+export function lcm(...numbers: number[]): number {
+  return productOf(numbers) / gcd(...numbers);
 }

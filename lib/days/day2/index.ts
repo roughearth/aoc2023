@@ -4,67 +4,54 @@ import { Day } from '..';
 
 export const meta: Day['meta'] = {};
 
-/*
+function analyse(input: string) {
+  const data = cleanAndParse(input, line => {
+    const [game, draws] = line.split(':');
+    const id = Number(game.slice(5));
 
-Rock: A, X
-Paper: B, Y
-Scissors: C, Z
+    const max: Record<string, number> = {
+      red: 0,
+      green: 0,
+      blue: 0
+    };
 
-*/
+    const rounds = cleanAndParse(draws, round => {
+      const balls = cleanAndParse(round, ball => {
+        const [number, colour] = ball.split(' ');
+        max[colour] = Math.max(max[colour], Number(number));
+      }, { separator: ',' });
 
-const ScoresPart1: Record<string, Record<string, number>> = {
-  X: { C: 6, A: 3, B: 0, self: 1 },
-  Y: { A: 6, B: 3, C: 0, self: 2 },
-  Z: { B: 6, C: 3, A: 0, self: 3 },
-}
+    }, { separator: ';' });
 
+    const power = max.red * max.green * max.blue;
 
-function roundPart1(l: string) {
-  const [elf, me] = l.split(' ');
-  const result = ScoresPart1[me][elf];
-  const choice = ScoresPart1[me].self;
+    return { id, max, power };
+  });
 
-  return result + choice;
+  return data;
 }
 
 export function part1() {
-  const data = cleanAndParse(input, roundPart1);
+  const data = analyse(input);
 
-  return data.reduce((a, b) => a + b);
-}
+  const possible = data.filter(({ max }) => {
+    return (
+      max.red <= 12 &&
+      max.green <= 13 &&
+      max.blue <= 14
+    );
+  });
 
-// Rock beats Scissors beats Paper beats Rock
-// A > C > B > A
-
-const ChoicePart2: Record<string, Record<string, string>> = {
-  X: { A: 'C', B: 'A', C: 'B' },
-  Y: { A: 'A', B: 'B', C: 'C' },
-  Z: { A: 'B', B: 'C', C: 'A' },
-}
-
-const ScoresPart2: Record<string, Record<string, number>> = {
-  A: ScoresPart1.X,
-  B: ScoresPart1.Y,
-  C: ScoresPart1.Z
-}
-
-function roundPart2(l: string) {
-  const [elf, strat] = l.split(' ');
-  const me = ChoicePart2[strat][elf];
-
-  const result = ScoresPart2[me][elf];
-  const choice = ScoresPart2[me].self;
-
-  return result + choice;
+  return possible.reduce((acc, { id }) => acc + id, 0);
 }
 
 export function part2() {
-  const data = cleanAndParse(input, roundPart2);
+  const data = analyse(input);
 
-  return data.reduce((a, b) => a + b);
+  return data.reduce((acc, { power }) => acc + power, 0);
 }
 
 export const answers = [
-  13809,
-  12316
+  2204,
+  71036
 ];

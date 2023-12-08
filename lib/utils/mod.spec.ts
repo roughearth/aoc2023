@@ -2,46 +2,57 @@ import { modAdd, modInv, modLog, modLpr, modMul, modPow } from "./mod";
 
 describe('mod utils', () => {
   describe('modLpr', () => {
-    it('returns the least positive residue of a number modulo mod', () => {
-      expect(modLpr(7, 5)).toBe(2);
-      expect(modLpr(-7, 5)).toBe(3);
-      expect(modLpr(7, -5)).toBe(2);
-      expect(modLpr(-7, -5)).toBe(3);
+    it.each([
+      [7, 5, 2],
+      [-7, 5, 3],
+      [7, -5, 2],
+      [-7, -5, 3],
+    ])('the least positive residue of %p modulo %p is %p', (a, b, c) => {
+      expect(modLpr(a, b)).toBe(c);
     });
   });
 
   describe('modInv', () => {
     it('returns the modular inverse of a number modulo mod', () => {
       expect(modInv(3, 7)).toBe(5);
-      expect(() => modInv(2, 3)).toThrow();
     });
   });
 
   describe('modAdd', () => {
-    it('returns the sum of two numbers modulo mod', () => {
-      expect(modAdd(3, 4, 5)).toBe(2);
-      expect(modAdd(3, 4, -5)).toBe(2);
+    it.each([
+      [3, 4, 5, 2],
+      [3, 4, -5, 2]
+    ])('the sum of %p and %p modulo %p is %p', (a, b, c, d) => {
+      expect(modAdd(a, b, c)).toBe(d);
     });
   });
 
   describe('modMul', () => {
-    it('returns the product of two numbers modulo mod', () => {
-      expect(modMul(3, 4, 5)).toBe(2);
-      expect(modMul(3, 4, -5)).toBe(2);
+    it.each([
+      [3, 4, 5, 2],
+      [3, 4, -5, 2]
+    ])('the product of %p and %p modulo %p is %p', (a, b, c, d) => {
+      expect(modMul(a, b, c)).toBe(d);
     });
   });
 
   describe('modPow', () => {
-    it('returns n to the power of p modulo mod', () => {
-      expect(modPow(2, 3, 5)).toBe(3);
-      expect(modPow(2, 3, -5)).toBe(3);
+    it.each([
+      [3, 4, 5, 1],
+      [3, 4, -5, 1],
+      [3, 4, 7, 4],
+      [3, 4, -7, 4]
+    ])('%p to the power of %p modulo %p is %p', (a, b, c, d) => {
+      expect(modPow(a, b, c)).toBe(d);
     });
   });
 
   describe('modLog', () => {
     it('returns the logarithm of n to the base of b modulo mod', () => {
-      expect(modLog(2)(3)(7)).toBe(5);
-      expect(() => modLog(2)(3)(5)).toThrow();
+      expect(modLog(2, 3, 7)).toBe(2);
+    });
+    it('throws if there is no log', () => {
+      expect(() => modLog(2, 99, 7)).toThrow();
     });
   });
 });
