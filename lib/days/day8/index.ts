@@ -68,11 +68,7 @@ export function part2() {
     return cursor;
   });
 
-
-  const reducer = gcd(...oneByOne);
-  const reduced = oneByOne.map(n => n / reducer);
-
-  return lcm(length, ...reduced);
+  return lcm(length, ...oneByOne);
 }
 
 export const answers = [

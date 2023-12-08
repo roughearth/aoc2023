@@ -120,5 +120,5 @@ export function gcd(...numbers: number[]): number {
 }
 
 export function lcm(...numbers: number[]): number {
-  return productOf(numbers) / gcd(...numbers);
+  return productOf(numbers) / gcd(...numbers) ** (numbers.length - 1);
 }
