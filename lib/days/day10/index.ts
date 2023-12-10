@@ -1,7 +1,6 @@
-import { eg1, eg2, input } from './input';
-import { cleanAndParse, inRange, orthogonalNeighbours, simpleRange } from '../../utils';
+import { eg1, eg2, eg3, eg4, eg5, eg6, input } from './input';
+import { CoordinateRange, cleanAndParse, coordinates, inRange, simpleRange } from '../../utils';
 import { Day } from '..';
-import { dir } from 'console';
 
 export const meta: Day['meta'] = {};
 
@@ -21,7 +20,8 @@ function move(from: number[], direction: Direction) {
   return [row + dRow, col + dCol];
 }
 
-const Pipe = ['-', '|', 'F', '7', 'J', 'L'] as const;
+const VBoundary = ['|', 'F', '7', 'J', 'L'] as const;
+const Pipe = ['-', ...VBoundary] as const;
 type Pipe = typeof Pipe[number];
 type Cell = Pipe | 'S' | '.';
 
@@ -68,6 +68,24 @@ Pipe.forEach(pipe => {
   ));
 });
 
+function getSShape(grid: Cell[][], gridRange: CoordinateRange, start: number[]) {
+  const shape: Direction[] = [];
+
+  Object.keys(Moves).forEach((dn) => {
+    const dir = dn as Direction;
+    const [r, c] = move(start, dir);
+    if (inRange([r, c], gridRange) && ValidNeighbors.get('S')!.get(dir)!.includes(grid[r][c])) {
+      shape.push(dir);
+    }
+  });
+
+  const directionToPipe = Object.fromEntries(Object.entries(pipeToDirection).map(
+    ([pipe, directions]) => [directions.sort().join(","), pipe]
+  ));
+
+  return directionToPipe[shape.sort().join(",")];
+}
+
 function findLoop(input: string) {
   let start: number[] = [];
   const grid = cleanAndParse(input, (s, r) => {
@@ -98,38 +116,70 @@ function findLoop(input: string) {
     for (const currentCoord of currentList) {
       const [row, col] = currentCoord;
 
-      Array.from(ValidNeighbors.get(grid[row][col])!.entries()).map(
+      const links = Array.from(ValidNeighbors.get(grid[row][col])!.entries()).map(
         ([dir, nextPipes]) => [move([row, col], dir), nextPipes] as const
       ).filter(
         ([coord]) => inRange(coord, gridRange) && !loop.has(coord.join(','))
       ).filter(
         ([[r, c], pipes]) => pipes.includes(grid[r][c])
-      ).forEach(
-        ([[r, c]]) => nextList.push([r, c])
+      ).map(
+        ([[r, c]]) => {
+          nextList.push([r, c]);
+          return [r, c].join(',');
+        }
       );
 
-      loop.add(currentCoord.join(','));
+      const id = currentCoord.join(',');
+      loop.add(id);
     }
 
     currentList = nextList;
   }
 
-  console.log({ N, loop, ValidNeighbors, start, width, height });
-
-  return { loop, start };
+  return { grid, gridRange, loop, start };
 }
 
 export function part1() {
   const { loop } = findLoop(input);
 
-  return Math.ceil(loop.size / 2);
+  return loop.size / 2;
 }
 
 export function part2() {
-  return "todo";
+  const use = input;
+  const { grid, gridRange, loop, start } = findLoop(use);
+
+  const inside = new Set<string>();
+
+  const sShape = getSShape(grid, gridRange, start);
+
+  grid[start[0]][start[1]] = sShape as Cell;
+
+  for (const [row, col] of coordinates(gridRange)) {
+    if (!loop.has([row, col].join(','))) {
+      const left = Array.from(grid[row].slice(0, col)).filter(
+        (c, i) => {
+          const onLoop = loop.has([row, i].join(','));
+          const isBoundary = VBoundary.includes(c as any);
+
+          return onLoop && isBoundary;
+        }
+      ).join("");
+
+      // |, FJ, or L7 each count as a crossing
+      // F7 and LJ don't count as crossings
+      const x = left.match(/\||FJ|L7/g) ?? [];
+
+      if (x.length % 2 === 1) {
+        inside.add([row, col].join(','));
+      }
+    }
+  }
+
+  return inside.size;
 }
 
 export const answers = [
   6842,
-  // 222
+  393
 ];

@@ -10,6 +10,49 @@ SJLL7
 |F--J
 LJ.LJ`;
 
+export const eg3 = `...........
+.S-------7.
+.|F-----7|.
+.||.....||.
+.||.....||.
+.|L-7.F-J|.
+.|..|.|..|.
+.L--J.L--J.
+...........`;
+
+export const eg4 = `
+..........
+.S------7.
+.|F----7|.
+.||....||.
+.||....||.
+.|L-7F-J|.
+.|..||..|.
+.L--JL--J.
+..........`;
+
+export const eg5 = `.F----7F7F7F7F-7....
+.|F--7||||||||FJ....
+.||.FJ||||||||L7....
+FJL7L7LJLJ||LJ.L-7..
+L--J.L7...LJS7F-7L7.
+....F-J..F7FJ|L7L7L7
+....L7.F7||L7|.L7L7|
+.....|FJLJ|FJ|F7|.LJ
+....FJL-7.||.||||...
+....L---J.LJ.LJLJ...`;
+
+export const eg6 = `FF7FSF7F7F7F7F7F---7
+L|LJ||||||||||||F--J
+FL-7LJLJ||||||LJL-77
+F--JF--7||LJLJ7F7FJ-
+L---JF-JLJ.||-FJLJJ7
+|F|F-JF---7F7-L7L|7|
+|FFJF7L7F-JF7|JL---7
+7-L-JL7||F7|L7F-7F7|
+L.L7LFJ|||||FJL7||LJ
+L7JLJL-JLJLJL--JLJ.L`;
+
 export const input = `7.LJFFF7F77.----7F7777F|-F-7-7F77LL77J77F|.|JFF7-F|77.FF77|F77F-L|-L7FFL7L7--.L|--7L7.J-F7-|-F|7FJ.FJJ7F7-7-7JFL|7-|-7FJJ7FFF7LL--L7.-JJ-F-F
 J7LL-J||FLJ-|J.F|-L|FJ7J|.LL-L7F|LF||JFJ7L-JLF.||FL.FF.--F77|J7|L|.|LF7-|||J|7L|7L77|-..|JJLFJ|||JF|L|F|JF--77LFLF7JJL-JLL-JLL7L.-L-|FJ.LLFF
 L|-7LFLL7J|..|F-7-7L|-7.L--L-JL|..FFJ.|7||F7F----JJ..|||L||L|.L|L|.|F--7|L-7F|FL7JLJLL-7J7|.||-LJ---7-L-J|FFL|FF7.|7F7..|L-7|F7J-7|.||-JJL7J
