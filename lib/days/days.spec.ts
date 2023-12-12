@@ -5,10 +5,6 @@ import { determineDay } from '../utils/dates';
 function dayFilter(d: number) {
   const day = determineDay();
 
-  if (day < 0 || day > 25) {
-    return true;
-  }
-
   if (process.env.DAY === "today") {
     return d === day;
   }
@@ -33,9 +29,11 @@ describe.each(dayResults)("Day %i", (d: number) => {
     if (ans1 === Symbol.for('skip')) {
       test.skip("Part 1", () => { });
     }
-    test("Part 1", () => {
-      expect(day.part1(safetyNet(day.meta))).toEqual(ans1);
-    });
+    else {
+      test("Part 1", () => {
+        expect(day.part1(safetyNet(day.meta))).toEqual(ans1);
+      });
+    }
   }
 
   if (ans2) {

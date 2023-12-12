@@ -20,3 +20,23 @@ export function* pairs(
   }
   while (i < length - gap)
 }
+
+export function* sumPartitions(total: number, count: number, allowZero = false): Generator<number[]> {
+  let start = allowZero ? 0 : 1;
+
+  if (count === 1) {
+    yield [total];
+  }
+  else if (count === 2) {
+    for (let i = start; i <= total - 1; i++) {
+      yield [i, total - i];
+    }
+  }
+  else {
+    for (let i = start; i <= total - (count - 1); i++) {
+      for (const rest of sumPartitions(total - i, count - 1)) {
+        yield [i, ...rest];
+      }
+    }
+  }
+}
