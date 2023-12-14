@@ -1,86 +1,121 @@
 import { eg1, input } from './input';
-import { cleanAndParse, sumOf, sumPartitions } from '../../utils';
+import { cleanAndParse, generateArray, sumOf, sumPartitions } from '../../utils';
 import { Day } from '..';
 
 export const meta: Day['meta'] = {
   manualStart: true
 };
 
-function parse(input: string) {
-  return cleanAndParse(input, (l, i) => {
-    const [rawSprings, rawNumbers] = l.split(" ");
-    const springs = Array.from(rawSprings);
-    const numbers = rawNumbers.split(",").map(Number);
+type Result = number[];
+type Memo = Map<string, Result>;
 
-    const totalSprings = springs.length;
-    const totalFaults = sumOf(numbers);
-    const totalGood = totalSprings - totalFaults;
+/*
 
-    const minGaps = numbers.length - 1;
+  _______ _     _       _                                      _
+ |__   __| |   (_)     (_)                                    | |
+    | |  | |__  _ ___   _ ___  __      ___ __ ___  _ __   __ _| |
+    | |  | '_ \| / __| | / __| \ \ /\ / / '__/ _ \| '_ \ / _` | |
+    | |  | | | | \__ \ | \__ \  \ V  V /| | | (_) | | | | (_| |_|
+    |_|  |_| |_|_|___/ |_|___/   \_/\_/ |_|  \___/|_| |_|\__, (_)
+     /\   | \ | |  __ \                                   __/ |
+    /  \  |  \| | |  | |                                 |___/
+   / /\ \ | . ` | |  | |
+  / ____ \| |\  | |__| |
+ /_/    \_\_| \_|_____/_
+ | |                  | |
+ | |_ ___   ___    ___| | _____      __
+ | __/ _ \ / _ \  / __| |/ _ \ \ /\ / /
+ | || (_) | (_) | \__ \ | (_) \ V  V /
+  \__\___/ \___/  |___/_|\___/ \_/\_/
 
-    const validOptions: string[] = [];
 
-    function checkOption(partition: number[]) {
-      const option = makeOption(partition, numbers);
+*/
 
-      const isValid = Array.from(option).reduce(
-        (acc, c, i) => {
-          const src = springs[i];
-          if (src !== '?') {
-            return acc && src === c;
-          }
+function listNext(springs: string, numbers: number[], memo: Memo) {
+  const firstNumber = numbers[0];
+  const key = `${springs}|${firstNumber}`;
+  if (memo.has(key)) {
+    return memo.get(key)!;
+  }
 
-          return acc;
-        },
-        true
-      );
+  const rx = new RegExp(`^[?.][?#]{${firstNumber}}[?.]`);
+  const augSprings = "." + springs + ".";
 
-      if (isValid) {
-        validOptions.push(option);
-      }
-    }
+  const list = generateArray(
+    springs.length - firstNumber + 1,
+    i => [
+      i,
+      rx.test(augSprings.slice(i))
+    ] as [number, boolean]
+  ).filter(([, b]) => b).map(([i]) => i)
 
-    for (const partition of sumPartitions(totalGood, minGaps)) {
-      checkOption([0, ...partition, 0]);
-    }
+  memo.set(key, list);
 
-    for (const partition of sumPartitions(totalGood, minGaps + 1)) {
-      checkOption([0, ...partition]);
-      checkOption([...partition, 0]);
-    }
-
-    for (const partition of sumPartitions(totalGood, minGaps + 2)) {
-      checkOption(partition);
-    }
-
-    return {
-      validOptions,
-      springs,
-      numbers
-    };
-  }).filter(Boolean);
+  return list;
 }
 
-function makeOption(partition: number[], springs: number[]) {
-  if (partition.length !== springs.length + 1) {
-    throw new Error("Invalid partition");
+function countValid(springs: string, numbers: number[], memo: Memo, logStack: unknown[] = []) {
+  const log: unknown[] = [springs, numbers.join(",")];
+  logStack.push(log);
+
+  if (numbers.length === 0) {
+    log.push(`no more numbers, ${springs.includes("#") ? 0 : 1}`);
+    return springs.includes("#") ? 0 : 1;
+  };
+
+  if (springs.length === 0) {
+    log.push(`no more springs, ${Boolean(numbers.length) ? 0 : 1}`);
+    return Boolean(numbers.length) ? 0 : 1;
   }
 
-  const option: string[] = [];
+  const nextNumbers = numbers.slice(1);
 
-  for (let i = 0; i < springs.length; i++) {
-    option.push('.'.repeat(partition[i]));
-    option.push('#'.repeat(springs[i]));
-  }
-  option.push('.'.repeat(partition.at(-1)!));
+  const list: number[] = listNext(springs, numbers, memo)
 
-  return option.join('');
+  log.push(list.join(","));
+
+  const vals: number[] = list.map(i => {
+    return countValid(springs.slice(i + numbers[0]), nextNumbers, memo, logStack);
+  });
+
+  const sum = sumOf(vals);
+
+  log.push(vals.join(","));
+  log.push(sum);
+
+  return sum;
+}
+
+
+
+function parse(input: string, copies: number) {
+  const memo: Memo = new Map();
+
+  return cleanAndParse(input, (l, i) => {
+    // if (i !== 0) return 0;
+
+    const logStack: unknown[] = [];
+
+    const [rawSprings, rawNumbers] = l.split(" ");
+    const springs = rawSprings.repeat(copies);
+    const numbers = generateArray(copies, () => rawNumbers.split(",")).flat().map(Number);
+
+    const returnValue = countValid(springs, numbers, memo, logStack);
+
+    // console.log("logStack", returnValue, logStack);
+    return returnValue;
+  });
+}
+
+function calcTotal(parsed: ReturnType<typeof parse>) {
+  console.log("calcTotal", parsed);
+  return sumOf(parsed);
 }
 
 export function part1() {
-  const parsed = parse(input);
+  const parsed = parse(eg1, 1);
 
-  return sumOf(parsed.map(p => p!.validOptions.length));
+  return calcTotal(parsed);
 }
 
 export function part2() {
@@ -88,6 +123,6 @@ export function part2() {
 }
 
 export const answers = [
-  7670,
+  21, // <- eg | real -> 7670,
   // 222
 ];
