@@ -10,11 +10,11 @@ export function chunk<T>(a: T[], size: number): T[][] {
 }
 
 export function sumOf(a: number[], map: (i: any) => number = i => i): number {
-  return a.reduce((a, b) => map(a) + map(b));
+  return a.reduce((a, b) => map(a) + map(b), 0);
 }
 
 export function productOf(a: number[], map: (i: any) => number = i => i): number {
-  return a.reduce((a, b) => map(a) * map(b));
+  return a.reduce((a, b) => map(a) * map(b), 1);
 }
 
 export function findBest<T>(a: T[], scoreFn: (i: T) => number): [T, number] {
