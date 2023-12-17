@@ -1,7 +1,7 @@
 import { eg1, eg2, input } from './input';
 import { cleanAndParse, getIntKey, inRange, simpleRange } from '../../utils';
 import { Day } from '..';
-import { dijkstraFrom } from '../../utils/dijkstra';
+import { aStarFrom } from '../../utils/a-star';
 
 
 export const meta: Day['meta'] = {
@@ -21,9 +21,12 @@ const Moves = [
   { dir: R, opp: L, dRow: 0, dCol: 1 }
 ];
 
-type Crucible = {
+type Coordinate = {
   row: number,
-  col: number,
+  col: number
+};
+
+type Crucible = Coordinate & {
   direction: number,
   straightCount: number
 };
@@ -104,21 +107,31 @@ function findNext(
   ]);
 }
 
+function manhattanDistance(a: Coordinate, b: Coordinate) {
+  return Math.abs(a.row - b.row) + Math.abs(a.col - b.col);
+}
+
+function isEnd(crucible: Crucible, end: Coordinate, minLine: number) {
+  return (
+    (crucible.row === end.row) &&
+    (crucible.col === end.col) &&
+    (crucible.straightCount > minLine)
+  );
+}
+
 export function part(input: string, min: number, max: number) {
   const grid = Grid(input);
   const cache = new Map<number, Crucible>();
 
-  const dj = dijkstraFrom<Crucible>(
+  const graph = aStarFrom<Crucible>(
     Crucible(0, 0, X, 1, cache),
     crucible => findNext(crucible, grid, cache, min, max),
+    crucible => manhattanDistance(crucible, grid.end),
+    crucible => isEnd(crucible, grid.end, min),
     { maxMs: 300_000 }
   );
 
-  const target = dj.find(node => (
-    (node.row === grid.end.row) &&
-    (node.col === grid.end.col) &&
-    (node.straightCount > min)
-  ));
+  const target = graph.find();
 
   return target[1];
 }
@@ -133,11 +146,11 @@ export function part2() {
 function vizPath(blocks: number[][], path: Crucible[]) {
   const viz = blocks.map(row => row.map(v => `${v}`));
 
-  const d: Record<string, string> = {
-    U: '^',
-    D: 'v',
-    L: '<',
-    R: '>'
+  const d: Record<number, string> = {
+    [U]: '^',
+    [D]: 'v',
+    [L]: '<',
+    [R]: '>'
   };
 
   path.forEach(
