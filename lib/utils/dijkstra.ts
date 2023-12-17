@@ -33,12 +33,23 @@ export function dijkstraFrom<T>(
   options?: {maxLoops?: number, maxMs?: number} // set up a safety net
 ): Dijkstra<T> {
   function* nodes(): Generator<NodeTuple<T>, void, unknown> {
+    let loopCount = 0;
+    const start = performance.now();
+
     const allNodes = new Set<T>([startNode]);
     const unvisitedNodes = new Set<T>([startNode]);
     const distanceMap = new Map<T, number>([[startNode, 0]]);
     const pathMap = new Map<T, T[]>([[startNode, [startNode]]]);
 
     while (unvisitedNodes.size) {
+      loopCount++;
+      if (options?.maxLoops && loopCount > options.maxLoops) {
+        throw new Error(`Maximum loop count exceeded after ${(performance.now() - start).toFixed(1)}ms`);
+      }
+      if (options?.maxMs && performance.now() - start > options.maxMs) {
+        throw new Error(`Maximum time exceeded after ${loopCount} loops`);
+      }
+
       const current = nextUnvisitedNode(unvisitedNodes, distanceMap) as T;
       unvisitedNodes.delete(current);
       const distance = <number>distanceMap.get(current);
@@ -79,6 +90,16 @@ export function dijkstraFrom<T>(
 
       throw new Error("Target not found");
     },
+    findAll(targetFn: (n: T) => boolean): NodeTuple<T>[] {
+      const all: NodeTuple<T>[] = [];
+      for (let [node, cost, path] of nodes()) {
+        if (targetFn(node)) {
+          all.push([node, cost, path]);
+        }
+      }
+
+      return all;
+    },
     // return all reachable nodes mapped to their distances
     cover(): Map<T, [number, T[]]> {
       return new Map(Array.from(nodes()).map(([n, d, p]) => [n, [d, p]]));
@@ -91,5 +112,6 @@ export type NodeTuple<T> = [T, number, T[]];
 export type Dijkstra<T> = {
   [Symbol.iterator]: () => Generator<NodeTuple<T>, void, unknown>,
   find: (targetFn: (n: T) => boolean) => NodeTuple<T>,
+  findAll: (targetFn: (n: T) => boolean) => NodeTuple<T>[],
   cover: () => Map<T, [number, T[]]>
 };
