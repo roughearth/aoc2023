@@ -21,6 +21,21 @@ export function* pairs(
   while (i < length - gap)
 }
 
+export function* combinationsOf<T>(items: T[], count: number): Generator<T[]> {
+  if (count === 1) {
+    for (const item of items) {
+      yield [item];
+    }
+  }
+  else {
+    for (const [i, item] of items.entries()) {
+      for (const rest of combinationsOf(items.slice(i + 1), count - 1)) {
+        yield [item, ...rest];
+      }
+    }
+  }
+}
+
 export function* sumPartitions(total: number, count: number, allowZero = false): Generator<number[]> {
   let start = allowZero ? 0 : 1;
 
