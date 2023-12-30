@@ -1,6 +1,7 @@
 import { eg1, input } from './input';
-import { cleanAndParse, pairs } from '../../utils';
+import { cleanAndParse, gcd, lcm, pairs } from '../../utils';
 import { Day } from '..';
+import { coordinatesOfInitialPosition } from './part2';
 
 export const meta: Day['meta'] = {};
 
@@ -15,11 +16,29 @@ function parse(input: string) {
       b: pt[1] - (grad[1] / grad[0]) * pt[0]
     }
 
+    let factor = gcd(...grad.map(Math.abs));
+
+    if (grad.every(x => x < 0)) {
+      factor *= -1;
+    }
+
+    const direction = grad.map(x => x / factor);
+    const floorDirection = [direction[0], direction[1]];
+
     return {
       src: l,
+      ptSrc,
       pt,
       grad,
-      d2
+      d2,
+
+      direction,
+      directionKey: direction.join(","),
+
+      floorDirection,
+      floorDirectionKey: floorDirection.join(","),
+
+      factor
     };
   });
 }
@@ -75,7 +94,7 @@ export function part1() {
 }
 
 export function part2() {
-  return "todo";
+  return coordinatesOfInitialPosition();
 }
 
 export const answers = [
